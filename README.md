@@ -1,4 +1,4 @@
-#### **File Upload Vulnerabilities:**
+#### **1. File Upload Vulnerabilities:**
 File upload vulnerabilities occur when a web application allows users to upload files without proper validation or security measures. Attackers can exploit these vulnerabilities to execute malicious code, deface a website, gain unauthorized access, or disrupt server operations.
 
 ---
