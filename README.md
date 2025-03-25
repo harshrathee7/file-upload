@@ -83,7 +83,7 @@ Here’s how you can set up a **File Upload Vulnerability Lab** for testing.
 
 ---
 
-## ** Lab Setup: File Upload Vulnerability Testing**
+## **Lab Setup: File Upload Vulnerability Testing**
 ### **1️) Environment Setup**
 You can use **DVWA (Damn Vulnerable Web App)** or create a custom vulnerable upload page.
 
